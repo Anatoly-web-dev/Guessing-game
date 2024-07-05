@@ -1,5 +1,6 @@
 const useBinarySearchAlgorithm = (min, max) => Math.floor((min + max) / 2); // - алгоритм бинарного поиска
 const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min)); // - случайное число
+const fixRangeValues = (value) => (value = value < -999 ? -999 : value > 999 ? 999 : value); // - задаёт интервал
 let minValue, maxValue, gameReady, attemptCount, answerValue; // - мин.и макс. значения, статус игры, кол-во попыток
 const gameOverPhraseValues = [
     'Я всегда угадываю!\n\u{1F60E}',
@@ -28,6 +29,8 @@ document.querySelector('.form__btn').addEventListener('click', () => {
     if (gameReady) {
         const popup = document.querySelector('.game-start');
         popup.classList.remove('show'); // - закрываем модальное окно, начинаем игру
+        minValue = minValue < -999 ? -999 : minValue > 999 ? 999 : minValue;
+        maxValue = maxValue < -999 ? -999 : maxValue > 999 ? 999 : maxValue;
         answerValue = useBinarySearchAlgorithm(minValue, maxValue);
         displayAnswerValue(answerValue); // отображаем предполанаемый ответ
     }
@@ -70,31 +73,28 @@ function setDefaultSettings() {
 // - запрашиваем значения минимума и максимума
 function getRangeValues() {
     const minValueField = document.querySelector('#min-value'); // - поле ввода мин. значения
-    const maxValueField = document.querySelector('#max-value'); // - поле ввода макс. значения
-
     minValueField.addEventListener('input', () => {
         if (minValueField.value !== '') {
             minValue = parseInt(minValueField.value);
-            fixRangeValues(minValue, maxValue, minValueField, minValueField);
+            if (!isNaN(minValue)) {
+                minValue = fixRangeValues(minValue);
+                displayHintText(minValue, maxValue, minValueField, minValueField);
+                gameReady = isNaN(minValue) || isNaN(maxValue) || minValue > maxValue ? false : true;
+            }
         }
     });
 
+    const maxValueField = document.querySelector('#max-value'); // - поле ввода макс. значения
     maxValueField.addEventListener('input', () => {
         if (maxValueField.value !== '') {
             maxValue = parseInt(maxValueField.value);
-            fixRangeValues(minValue, maxValue, maxValueField, minValueField);
+            if (!isNaN(maxValue)) {
+                maxValue = fixRangeValues(maxValue);
+                displayHintText(minValue, maxValue, maxValueField, minValueField);
+                gameReady = isNaN(minValue) || isNaN(maxValue) || minValue > maxValue ? false : true;
+            }
         }
     });
-}
-// - проверяем корректность ввода диапазона значений и исправляем
-function fixRangeValues(min, max, input, inputMin) {
-    if (!isNaN(min) || !isNaN(max)) {
-        min = min < -999 ? -999 : min > 999 ? 999 : min;
-        max = max < -999 ? -999 : max > 999 ? 999 : max;
-        displayHintText(min, max, input, inputMin);
-        gameReady = isNaN(min) || isNaN(max) || min > max ? false : true;
-    }
-    displayHintText(min, max, input, inputMin);
 }
 // отображаем подсказки пользователю в зависимости от вводимых данных
 function displayHintText(min, max, inputField, inputMinField) {
