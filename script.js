@@ -1,4 +1,3 @@
-const useBinarySearchAlgorithm = (min, max) => Math.floor((min + max) / 2); // - алгоритм бинарного поиска
 const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min)); // - случайное число
 const fixRangeValues = (value) => (value = value < -999 ? -999 : value > 999 ? 999 : value); // - задаёт интервал
 let minValue, maxValue, gameReady, attemptCount, answerValue; // - мин.и макс. значения, статус игры, кол-во попыток
@@ -31,7 +30,7 @@ document.querySelector('.form__btn').addEventListener('click', () => {
         popup.classList.remove('show'); // - закрываем модальное окно, начинаем игру
         minValue = minValue < -999 ? -999 : minValue > 999 ? 999 : minValue;
         maxValue = maxValue < -999 ? -999 : maxValue > 999 ? 999 : maxValue;
-        answerValue = useBinarySearchAlgorithm(minValue, maxValue);
+        answerValue = Math.floor((minValue + maxValue) / 2);
         displayAnswerValue(answerValue); // отображаем предполанаемый ответ
     }
 });
@@ -66,7 +65,7 @@ function setDefaultSettings() {
     maxValue = 100; // - макс. значение по умолчанию
     displayHintText(minValue, maxValue, minValueField, maxValueField); // - отображаем текст подсказки
     attemptCount = 1; // - количество попыток по умолчанию = 1
-    answerValue = useBinarySearchAlgorithm(minValue, maxValue); // - вычисляем с помощью алгоритма значение
+    answerValue = Math.floor((minValue + maxValue) / 2); // - вычисляем с помощью алгоритма значение
     displayAnswerValue(answerValue); // - Отображаем текст с предполагаемым вычеслинным вариантом ответа
     displayAttemptValue(attemptCount); // - Отображаем текущее кол-во попыток;
 }
@@ -140,16 +139,25 @@ function displayAnswerValue(currentValue) {
     ];
     answerOutput.innerHTML = answerPhraseValues[randomNumber];
 }
-// показывает следующий вариант ответа
+
 function showNextAnswer(btn) {
     if (minValue === maxValue) {
         gameReady = false;
         displayAnswerText(failedPhraseValues);
     } else {
-        btn === 'less' ? (maxValue = answerValue - 1) : (minValue = answerValue + 1);
-        answerValue = useBinarySearchAlgorithm(minValue, maxValue);
+        if (btn === 'less') {
+            maxValue = answerValue - 1;
+            answerValue = Math.ceil((minValue + maxValue) / 2);
+        } else if (btn === 'more') {
+            minValue = answerValue + 1;
+            answerValue = Math.floor((minValue + maxValue) / 2);
+        }
         attemptCount++;
         displayAttemptValue(attemptCount);
         displayAnswerValue(answerValue);
+        if (minValue > maxValue) {
+            gameReady = false;
+            displayAnswerText(failedPhraseValues);
+        }
     }
 }
