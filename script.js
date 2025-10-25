@@ -61,8 +61,8 @@ function setDefaultSettings() {
     gameReady = false;
     minValueField.value = '';
     maxValueField.value = '';
-    minValue = 0; // - мин. значение по умолчанию
-    maxValue = 100; // - макс. значение по умолчанию
+    minValue = -999; // - мин. значение по умолчанию
+    maxValue = 999; // - макс. значение по умолчанию
     displayHintText(minValue, maxValue, minValueField, maxValueField); // - отображаем текст подсказки
     attemptCount = 1; // - количество попыток по умолчанию = 1
     answerValue = Math.floor((minValue + maxValue) / 2); // - вычисляем с помощью алгоритма значение
